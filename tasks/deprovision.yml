@@ -1,0 +1,37 @@
+- name: Delete glance db-sync job
+  k8s_v1_job:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance-db-sync
+    namespace: openstack
+    state: absent
+
+- name: Delete glance deployment
+  k8s_v1beta1_deployment:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance-api
+    namespace: openstack
+    state: absent
+
+- name: Delete glance service
+  k8s_v1_service:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance
+    namespace: openstack
+    state: absent
+
+- name: Delete glance configmaps
+  ignore_errors: yes
+  k8s_v1_config_map:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance
+    namespace: openstack
+    state: absent
+    debug: yes

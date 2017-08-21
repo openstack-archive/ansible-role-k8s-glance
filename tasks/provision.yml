@@ -1,0 +1,180 @@
+- name: Create project
+  k8s_v1_namespace:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: openstack
+    state: present
+    debug: yes
+
+- name: Upload config files
+  template:
+    src: "{{item}}"
+    dest: /tmp/{{item}}
+    backup: yes
+    mode: 0644
+  with_items:
+    - httpd.conf
+    - httpd-glance-main.conf
+
+- include: hiera.yaml
+
+- name: Generate config files
+  config_template:
+    src: base.conf.j2
+    dest: /tmp/glance-api.conf
+    config_overrides: '{{glance_config}}'
+    config_type: ini
+
+- name: Read configs into memory
+  slurp:
+    src: "/tmp/httpd-glance-main.conf"
+  register: "httpd_glance_main_conf"
+
+- name: Read configs into memory
+  slurp:
+    src: "/tmp/httpd.conf"
+  register: "httpd_conf"
+
+- name: Read configs into memory
+  slurp:
+    src: "/tmp/glance-api.conf"
+  register: "glance_conf"
+
+- name: Create glance configmaps
+  ignore_errors: yes
+  k8s_v1_config_map:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance
+    namespace: openstack
+    state: present
+    debug: yes
+    labels:
+      service: glance
+    data:
+      config.json: |
+        {
+            "command": "/usr/sbin/httpd -DFOREGROUND",
+            "config_files": [
+              {
+                "dest": "/etc/httpd/conf/httpd.conf",
+                "owner": "root",
+                "perm": "0644",
+                "source": "/var/lib/kolla/config_files/httpd.conf"
+              },
+              {
+                "dest": "/etc/glance/glance-api.conf",
+                "owner": "glance",
+                "perm": "0644",
+                "source": "/var/lib/kolla/config_files/glance-api.conf"
+              },
+              {
+                "dest": "/etc/httpd/conf.d/10-glance-main.conf",
+                "owner": "root",
+                "perm": "0644",
+                "source": "/var/lib/kolla/config_files/httpd-glance-main.conf"
+              },
+            ]
+        }
+      glance-api.conf: |
+        {{glance_conf['content'] | b64decode}}
+      httpd.conf: |
+        {{httpd_conf['content'] | b64decode}}
+      httpd-glance-main.conf: |
+        {{httpd_glance_main_conf['content'] | b64decode}}
+      httpd-glance-admin.conf: |
+        {{httpd_glance_admin_conf['content'] | b64decode}}
+
+
+- name: Create glance db-sync job
+  k8s_v1_job:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance-db-sync
+    namespace: openstack
+    state: present
+    spec_template_metadata_annotations:
+      pod.beta.kubernetes.io/init-containers: '[
+          {
+            "name": "glance-db-create",
+            "image": "tripleoupstream/centos-binary-mariadb",
+            "imagePullPolicy": "IfNotPresent",
+            "restartPolicy": "OnFailure",
+            "command": [
+              "mysql",
+              "-h",
+              "mariadb",
+              "-u",
+              "root",
+              "--password=weakpassword",
+              "-e",
+              "create database if not exists glance;"
+            ]
+          }
+        ]'
+    restart_policy: OnFailure
+    containers:
+      - image: tripleoupstream/centos-binary-glance-api
+        name: glance-db-sync
+        env:
+          - name: KOLLA_CONFIG_STRATEGY
+            value: COPY_ALWAYS
+          - name: KOLLA_BOOTSTRAP
+            value: ''
+        volume_mounts:
+        - name: kolla-config
+          mountPath: /var/lib/kolla/config_files/
+    volumes:
+      - name: kolla-config
+        config_map:
+          name: glance
+    state: present
+
+- name: Create glance service
+  k8s_v1_service:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance
+    namespace: openstack
+    state: present
+    ports:
+      - port: 9292
+        name: glance-api
+    selector:
+      app: glance-api
+
+- name: Create glance deployment
+  k8s_v1beta1_deployment:
+    host: "{{coe_host}}"
+    context: "{{kube_context}}"
+    kubeconfig: "{{config_file}}"
+    name: glance-api
+    namespace: openstack
+    replicas: 1
+    spec_revision_history_limit: 3
+    spec_template_metadata_labels:
+      app: glance-api
+    containers:
+      - name: glance-api
+        image: tripleoupstream/centos-binary-glance-api
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: KOLLA_CONFIG_STRATEGY
+          value: COPY_ALWAYS
+        - name: KOLLA_KUBERNETES
+          value: ""
+        ports:
+          - name: glance-api
+            containerPort: 9292
+        volume_mounts:
+        - name: kolla-config
+          mountPath: /var/lib/kolla/config_files/
+    volumes:
+      - name: kolla-config
+        config_map:
+          name: glance
+    state: present

@@ -1,0 +1,59 @@
+- name: Translate hieradata
+  include_role:
+    name: 'ansible-role-k8s-tripleo'
+  vars:
+    hieradata: '{{hiera_data}}'
+    hieradata_file: '{{hiera_data_file}}'
+    schema:
+      glance::database_connection: database.connection
+
+      glance_log_file: DEFAULT.log_file
+      glance::api::debug: DEFAULT.debug
+      glance::api::workers: DEFAULT.workers
+      glance::api::bind_port: DEFAULT.bind_port
+      glance::api::enable_v1_api: DEFAULT.enable_v1_api
+      glance::api::enable_v2_api: DEFAULT.enable_v2_api
+      glance::api::show_image_direct_url: DEFAULT.show_image_direct_url
+      glance::api::show_multiple_locations: DEFAULT.show_multiple_locations
+
+      glance::api::authtoken::auth_uri: keystone_authtoken.auth_uri
+      glance::api::authtoken::auth_url: keystone_authtoken.auth_url
+      glance::api::authtoken::password: keystone_authtoken.password
+      glance::api::authtoken::username: keystone_authtoken.username
+      glance::api::authtoken::project: keystone_authtoken.project
+#      glance::keystone::authtoken::user_domain_name: 'Default'
+#      glance::keystone::authtoken::project_domain_name: 'Default'
+
+
+      glance::api::os_region_name: glance_store.os_region_name
+
+      glance::api::enable_proxy_headers_parsing: oslo_middleware.enable_proxy_headers_parsing
+
+      glance::api::pipeline: paste_deploy.pipeline
+
+      #glance_notifier_strategy: {get_param: GlanceNotifierStrategy}
+      glance::notify::rabbitmq::rabbit_userid: oslo_messaging_rabbit.rabbit_userid
+      glance::notify::rabbitmq::rabbit_port: oslo_messaging_rabbit.rabbit_port
+      glance::notify::rabbitmq::rabbit_password: oslo_messaging_rabbit.rabbit_password
+      glance::notify::rabbitmq::rabbit_use_ssl: oslo_messaging_rabbit.rabbit_use_ssl
+      glance::notify::rabbitmq::rabbit_host: oslo_messaging_rabbit.rabbit_host
+
+      glance::notify::rabbitmq::notification_driver: {get_param: NotificationDriver}
+      glance::notification_driver: oslo_messaging_notifications.driver
+      glance::notification_topics: oslo_messaging_notifications.topics
+
+    fact_variable: 'glance_config'
+
+#           glance::policy::policies: {get_param: GlanceApiPolicies}
+#           glance::backend::swift::swift_store_auth_address: {get_param: [EndpointMap, KeystoneV3Internal, uri] }
+#           glance::backend::swift::swift_store_user: service:glance
+#           glance::backend::swift::swift_store_key: {get_param: GlancePassword}
+#           glance::backend::swift::swift_store_create_container_on_put: true
+#           glance::backend::swift::swift_store_auth_version: 3
+#           glance::backend::rbd::rbd_store_pool: {get_param: GlanceRbdPoolName}
+#           glance::backend::rbd::rbd_store_user: {get_param: CephClientUserName}
+#           glance_backend: {get_param: GlanceBackend}
+
+#           tripleo::profile::base::glance::api::glance_nfs_enabled: {get_param: GlanceNfsEnabled}
+#           tripleo::glance::nfs_mount::share: {get_param: GlanceNfsShare}
+#           tripleo::glance::nfs_mount::options: {get_param: GlanceNfsOptions}
