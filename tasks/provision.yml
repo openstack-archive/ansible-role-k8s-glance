@@ -17,7 +17,7 @@
     - httpd.conf
     - httpd-glance-main.conf
 
-- include: hiera.yaml
+- include: hiera.yml
 
 - name: Generate config files
   config_template:
