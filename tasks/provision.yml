@@ -84,9 +84,6 @@
         {{httpd_conf['content'] | b64decode}}
       httpd-glance-main.conf: |
         {{httpd_glance_main_conf['content'] | b64decode}}
-      httpd-glance-admin.conf: |
-        {{httpd_glance_admin_conf['content'] | b64decode}}
-
 
 - name: Create glance db-sync job
   k8s_v1_job:
