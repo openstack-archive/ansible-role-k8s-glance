@@ -5,7 +5,9 @@
     hieradata: '{{hiera_data}}'
     hieradata_file: '{{hiera_data_file}}'
     schema:
-      glance::database_connection: database.connection
+# NOTE(flaper87): We should be able to use the connection
+# str coming from hiera. Let's use k8s' DNS for now.
+#      glance::database_connection: database.connection
 
       glance_log_file: DEFAULT.log_file
       glance::api::debug: DEFAULT.debug
@@ -42,6 +44,7 @@
       glance::notification_driver: oslo_messaging_notifications.driver
       glance::notification_topics: oslo_messaging_notifications.topics
 
+    default: '{{glance_config}}'
     fact_variable: 'glance_config'
 
 #           glance::policy::policies: {get_param: GlanceApiPolicies}
