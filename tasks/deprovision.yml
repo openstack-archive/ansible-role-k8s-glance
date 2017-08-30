@@ -4,7 +4,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance-db-sync
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: absent
 
 - name: Delete glance deployment
@@ -13,7 +13,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance-api
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: absent
 
 - name: Delete glance service
@@ -22,7 +22,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: absent
 
 - name: Delete glance configmaps
@@ -32,6 +32,6 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: absent
     debug: yes

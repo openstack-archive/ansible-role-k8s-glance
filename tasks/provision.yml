@@ -39,7 +39,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: present
     debug: yes
     labels:
@@ -82,7 +82,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance-db-sync
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: present
     spec_template_metadata_annotations:
       pod.beta.kubernetes.io/init-containers: '[
@@ -127,7 +127,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance
-    namespace: openstack
+    namespace: "{{namespace}}"
     state: present
     ports:
       - port: 9292
@@ -141,7 +141,7 @@
     context: "{{kube_context}}"
     kubeconfig: "{{config_file}}"
     name: glance-api
-    namespace: openstack
+    namespace: "{{namespace}}"
     replicas: 1
     spec_revision_history_limit: 3
     spec_template_metadata_labels:
