@@ -167,4 +167,6 @@
           name: glance
     state: present
 
+# NOTE(flaper87): we should do this iff the keystone-secret exists and keystone
+# is enabled. Add checks for each.
 - include: keystone.yml

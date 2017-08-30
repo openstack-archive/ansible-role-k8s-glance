@@ -7,11 +7,7 @@ namespace: openstack
 hiera_data: {}
 hiera_data_file: ''
 
-keystone_config:
-  admin_username: 'admin'
-  admin_project_name: 'admin'
-  admin_domain_name: 'default'
-  admin_password: 'weakpassword'
+clouds_config: 'clouds-secret'
 
 glance_config:
   DEFAULT:
