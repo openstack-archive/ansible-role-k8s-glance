@@ -1,0 +1,39 @@
+#- name: Read keystone_config
+#  include_role:
+#    name: ansible-role-k8s-keystone
+#    tasks_from: hiera
+
+- name: Register Glance in Keystone
+  include_role:
+    name: ansible-role-k8s-tripleo
+    tasks_from: bootstrap-service-endpoints
+  vars:
+    auth_url: '{{glance_config.keystone_authtoken.auth_url}}'
+    username: '{{keystone_config.admin_username}}'
+    password: '{{keystone_config.admin_password}}'
+    project_name: '{{keystone_config.admin_project_name}}'
+    domain_name: '{{keystone_config.admin_domain_name}}'
+    service_name: 'glance'
+    service_type: 'image'
+    service_region: 'RegionOne'
+    service_project: '{{glance_config.keystone_authtoken.project}}'
+    service_password: '{{glance_config.keystone_authtoken.password}}'
+    service_username: '{{glance_config.keystone_authtoken.username}}'
+    service_internal_url: '{{glance_config.keystone_internal_url}}'
+    service_public_url: '{{glance_config.keystone_public_url}}'
+    service_admin_url: '{{glance_config.keystone_admin_url}}'
+
+#- name: Create keystone user
+#  os_user:
+#    auth:
+#      auth_url: '{{glance_config.keystone_authtoken.auth_url}}'
+#      username: '{{keystone_config.admin_username}}'
+#      password: '{{keystone_config.admin_password}}'
+#      project_name: '{{keystone_config.admin_project_name}}'
+#    state: present
+#    name: '{{glance_config.keystone_username}}'
+#    password: '{{glance_config.keystone_user_password}}'
+#    update_password: on_create
+#    domain: '{{glance_config.keystone_default_domain}}'
+#    default_project: '{{glance_config.keystone_project}}'
+#

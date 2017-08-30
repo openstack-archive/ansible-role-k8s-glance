@@ -18,8 +18,8 @@
       glance::api::show_image_direct_url: DEFAULT.show_image_direct_url
       glance::api::show_multiple_locations: DEFAULT.show_multiple_locations
 
-      glance::api::authtoken::auth_uri: keystone_authtoken.auth_uri
-      glance::api::authtoken::auth_url: keystone_authtoken.auth_url
+      keystone_auth_uri: keystone_authtoken.auth_uri
+      keystone_identity_uri: keystone_authtoken.auth_url
       glance::api::authtoken::password: keystone_authtoken.password
       glance::api::authtoken::username: keystone_authtoken.username
       glance::api::authtoken::project: keystone_authtoken.project
@@ -43,6 +43,15 @@
       glance::notify::rabbitmq::notification_driver: {get_param: NotificationDriver}
       glance::notification_driver: oslo_messaging_notifications.driver
       glance::notification_topics: oslo_messaging_notifications.topics
+
+      # NOTE(flaper87): Required for registering the keystone endpoint
+      keystone_region: keystone_region
+      keystone_default_domain: keystone_default_domain
+      glance::keystone::auth::tenant: keystone_tenant
+      glance::keystone::auth::public_url: keystone_public_url
+      glance::keystone::auth::internal_url: keystone_internal_url
+      glance::keystone::auth::admin_url: keystone_admin_url
+      glance::keystone::auth::password: keystone_user_password
 
     default: '{{glance_config}}'
     fact_variable: 'glance_config'

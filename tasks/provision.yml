@@ -1,12 +1,3 @@
-- name: Create project
-  k8s_v1_namespace:
-    host: "{{coe_host}}"
-    context: "{{kube_context}}"
-    kubeconfig: "{{config_file}}"
-    name: openstack
-    state: present
-    debug: yes
-
 - name: Upload config files
   template:
     src: "{{item}}"
@@ -175,3 +166,5 @@
         config_map:
           name: glance
     state: present
+
+- include: keystone.yml

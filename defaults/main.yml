@@ -6,8 +6,32 @@ action: provision
 hiera_data: {}
 hiera_data_file: ''
 
+keystone_config:
+  admin_username: 'admin'
+  admin_project_name: 'admin'
+  admin_domain_name: 'default'
+  admin_password: 'weakpassword'
+
 glance_config:
   DEFAULT:
     public_bind_host: "0.0.0.0"
   database:
     connection: "mysql+pymysql://root:weakpassword@mariadb:3306/glance"
+
+  # NOTE(flaper87): Auth section for config file
+  keystone_authtoken:
+    auth_uri: 'http://keystone:35357'
+    auth_url: 'http://keystone:5000/v3'
+    password: weakpassword
+    username: 'glance'
+    project: 'admin'
+
+  # NOTE(flaper87): Required for registering the keystone endpoint
+  keystone_default_domain: 'default'
+  keystone_region: 'regionOne'
+  keystone_project: 'admin'
+  keystone_public_url: 'http://glance:9292'
+  keystone_internal_url: 'http://glance:9292'
+  keystone_admin_url: 'http://glance:9292'
+  keystone_user_password: 'weakpassword'
+  keystone_username: 'glance'
