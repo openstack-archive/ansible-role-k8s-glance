@@ -10,7 +10,7 @@
 #      glance::database_connection: database.connection
 
       glance_log_file: DEFAULT.log_file
-      glance::api::debug: DEFAULT.debug
+#      glance::api::debug: DEFAULT.debug
       glance::api::workers: DEFAULT.workers
       glance::api::bind_port: DEFAULT.bind_port
       glance::api::enable_v1_api: DEFAULT.enable_v1_api

@@ -3,8 +3,6 @@
     name: ansible-role-k8s-tripleo
     tasks_from: bootstrap-service-endpoints
   vars:
-    namespace: '{{namespace}}'
-    clouds_config: '{{clouds_config}}'
     service_name: 'glance'
     service_type: 'image'
     service_region: 'RegionOne'
