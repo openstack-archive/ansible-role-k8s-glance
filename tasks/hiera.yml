@@ -2,8 +2,6 @@
   include_role:
     name: 'ansible-role-k8s-tripleo'
   vars:
-    hieradata: '{{hiera_data}}'
-    hieradata_file: '{{hiera_data_file}}'
     schema:
 # NOTE(flaper87): We should be able to use the connection
 # str coming from hiera. Let's use k8s' DNS for now.

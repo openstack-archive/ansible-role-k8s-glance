@@ -6,8 +6,8 @@ action: provision
 service_name: glance
 namespace: openstack
 
-hiera_data: {}
-hiera_data_file: ''
+hieradata: {}
+hieradata_file: ''
 
 clouds_config: 'clouds-secret'
 
