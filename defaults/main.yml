@@ -19,6 +19,8 @@ clouds_config: 'clouds-secret'
 
 glance_config:
   DEFAULT:
+    debug: true
+    verbose: true
     public_bind_host: "0.0.0.0"
   database:
     connection: "mysql+pymysql://root:weakpassword@mariadb:3306/glance"
