@@ -3,12 +3,12 @@
     name: ansible-role-k8s-tripleo
     tasks_from: bootstrap-service-endpoints
   vars:
-    service_name: 'glance'
+#    service_name: '{{service_name}}'
     service_type: 'image'
     service_region: 'RegionOne'
     service_project: '{{glance_config.keystone_authtoken.project}}'
     service_password: '{{glance_config.keystone_authtoken.password}}'
     service_username: '{{glance_config.keystone_authtoken.username}}'
-    service_internal_url: '{{glance_config.keystone_internal_url}}'
-    service_public_url: '{{glance_config.keystone_public_url}}'
-    service_admin_url: '{{glance_config.keystone_admin_url}}'
+    service_internal_url: '{{ "https" if tls_enabled or "http"}}://{{glance_address}}:{{glance_port}}'
+    service_public_url: '{{ "https" if tls_enabled or "http"}}://{{glance_address}}:{{glance_port}}'
+    service_admin_url: '{{ "https" if tls_enabled or "http"}}://{{glance_address}}:{{glance_port}}'
