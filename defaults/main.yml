@@ -2,12 +2,18 @@ coe_host:
 coe_config_context:
 coe_config_file:
 action: provision
-
-service_name: glance
 namespace: openstack
+
+tls_enabled: false
 
 hieradata: {}
 hieradata_file: ''
+
+service_name: glance
+glance_port: 9292
+glance_hostname: "{{service_name}}"
+glance_address: "{{glance_hostname}}"
+glance_use_service_ip: true
 
 clouds_config: 'clouds-secret'
 
@@ -29,8 +35,5 @@ glance_config:
   keystone_default_domain: 'default'
   keystone_region: 'regionOne'
   keystone_project: 'admin'
-  keystone_public_url: 'http://glance:9292'
-  keystone_internal_url: 'http://glance:9292'
-  keystone_admin_url: 'http://glance:9292'
   keystone_user_password: 'weakpassword'
   keystone_username: 'glance'
