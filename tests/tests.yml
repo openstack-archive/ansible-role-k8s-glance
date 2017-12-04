@@ -1,0 +1,66 @@
+---
+- name: Get keystone cluster ip
+  shell:
+    cmd: |
+      kubectl get service keystone --namespace {{namespace}} --template={%raw%}{{.spec.clusterIP}}{%endraw%}
+    executable: /bin/bash
+  register: keystone_ip
+
+- set_fact:
+    keystone_ip: "{{keystone_ip.stdout}}"
+
+- name: Get glance cluster ip
+  shell:
+    cmd: |
+      kubectl get service glance --namespace {{namespace}} --template={%raw%}{{.spec.clusterIP}}{%endraw%}
+    executable: /bin/bash
+  register: glance_ip
+
+- set_fact:
+    glance_ip: "{{glance_ip.stdout}}"
+
+- name: Wait for glance to become available
+  wait_for:
+    host: "{{glance_ip}}"
+    port: "{{item}}"
+    delay: 2
+    timeout: 300
+  with_items:
+    - 9292
+
+- name: Test glance jobs completion
+  shell:
+    cmd: |
+      set -ex
+
+      rst=$(kubectl --namespace {{namespace}} get jobs {{item}} --template={%raw%}"{{.status.succeeded}}"{%endraw%})
+      if [ "$rst" == "1" ]; then
+          exit 0
+      fi
+      exit 1
+    executable: /bin/bash
+  retries: 6
+  delay: 5
+  register: task_result
+  until: task_result.rc == 0
+  with_items:
+    - glance-createdb
+    - glance-db-sync
+
+
+- name: Copy tempests config
+  become: true
+  template:
+    src: templates/tempest.conf
+    dest: /etc/tempest/tempest.conf
+
+- name: Run tempest
+  shell:
+    cmd: |
+      set -x
+      set -e
+      tempest init tempest
+      cd tempest
+      tempest run -r image
+    executable: /bin/bash
+  register: tempest_output
