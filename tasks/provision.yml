@@ -81,7 +81,6 @@
     name: ansible-role-k8s-tripleo
     tasks_from: create-database
   vars:
-    service_name: 'glance'
     database_name: 'glance'
 
 - name: Create glance db-sync job
@@ -115,7 +114,7 @@
     host: "{{coe_host}}"
     context: "{{coe_config_context}}"
     kubeconfig: "{{coe_config_file}}"
-    name: glance
+    name: "{{glance_hostname}}"
     namespace: "{{namespace}}"
     state: present
     ports:
@@ -123,6 +122,11 @@
         name: glance-api
     selector:
       app: glance-api
+  register: glance_service
+
+- set_fact:
+    glance_address: "{{glance_service.service.spec.cluster_ip}}"
+  when: glance_use_service_ip
 
 - name: Create glance deployment
   k8s_v1beta1_deployment:
