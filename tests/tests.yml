@@ -63,5 +63,5 @@
       cd tempest
       tempest run -r image
     executable: /bin/bash
-  ignore_errors: true
+#  ignore_errors: true
   register: tempest_output
