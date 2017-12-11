@@ -5,7 +5,8 @@
   vars:
 #    service_name: '{{service_name}}'
     service_type: 'image'
-    service_region: 'RegionOne'
+    service_region: '{{glance_config.keystone_region}}'
+    service_domain: '{{glance_config.keystone_default_domain}}'
     service_project: '{{glance_config.keystone_authtoken.project}}'
     service_password: '{{glance_config.keystone_authtoken.password}}'
     service_username: '{{glance_config.keystone_authtoken.username}}'
