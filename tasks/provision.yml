@@ -93,7 +93,7 @@
     state: present
     restart_policy: OnFailure
     containers:
-      - image: tripleoupstream/centos-binary-glance-api
+      - image: "tripleomaster/centos-binary-glance-api:current-tripleo"
         name: glance-db-sync
         env:
           - name: KOLLA_CONFIG_STRATEGY
@@ -141,7 +141,7 @@
       app: glance-api
     containers:
       - name: glance-api
-        image: tripleoupstream/centos-binary-glance-api
+        image: "tripleomaster/centos-binary-glance-api:current-tripleo"
         imagePullPolicy: IfNotPresent
         env:
         - name: KOLLA_CONFIG_STRATEGY
